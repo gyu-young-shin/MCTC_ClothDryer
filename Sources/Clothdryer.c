@@ -4,6 +4,12 @@
 #include "buzzer.h"
 #include "segment.h"
 #include "flashrom.h"
+// 토출온도 110 히터를 OFF  flag heat off 
+// 90도 이하가 되면 Enable 
+// 토출온도 가 110도 이하는 감지 하면  
+
+
+//post 포지 전원 OFF 모드에서 실내 온도만 볼것이 아니라 히터온도도 보도록 수정( 50도 미만까지 FAN)  배기도 시키고 순환도 되야 함 
 
 _Bool		COMM_CIRFAN_ON = 0;				// 순환 팬
 _Bool		COMM_VENTILFAN_ON = 0;			// 배기? 팬
@@ -43,6 +49,7 @@ _Bool		flg_first_error = 0;			// 첫번째 에러
 _Bool		flg_cirfan_out = 0;				// 순환 팬
 _Bool		flg_ventilfan_out = 0;			// 배기? 팬
 _Bool		flg_heater_out = 0;				// 팬팬
+_Bool		flg_heater_outEnable = 0;				// Heater Enable 
 _Bool		flg_duct_out = 0;				// 덕트 Open Close
 _Bool		flg_uvlamp_out = 0;
 _Bool		flg_smoke_heater_out = 0;
@@ -122,6 +129,8 @@ uint16_t 	smoke_run_timeout = 0;
 uint8_t  	error_timeout = 0;
 uint8_t  	cycle_count = 0;
 uint8_t  	sensor_check_timeout = 10;
+uint8_t cooling_Timer = 0;
+
 
 uint16_t 	cir_err_timeout = 0;		// 순환불량 Timeout
 uint16_t 	heater_err_timeout = 0;		// 히터불량 Timeout
@@ -714,15 +723,25 @@ void Cooling_Proc(void)
 	switch(cool_step)
 	{
 		case 0:
-			if((COMM_EXT_TEMP <= 50) && (COMM_HEATER_TEMP < 100))										// 내부온도가 50도 이하
+			if((COMM_EXT_TEMP < 50) && (COMM_HEATER_TEMP < 50))										// 내부온도가 50도 이하
 				cool_step = 99;
 			else
 			{
 				cool_step = 1;
 				disp_mode = DISP_TEMPTIME;
+				flg_cirfan_out = 1;	
+				flg_ventilfan_out = 1;
+				flg_heater_out = 0;
+				cooling_Timer = 180;
 			}
 			break;
 		case 1:
+			if(cooling_Timer ==0 ){
+				cool_step = 2;
+			}
+
+		break;
+		case 2:
 			flg_coolled_amulating = 1;
 			flg_cwd = 0;
 			circula_fan_speed_level = 10;
@@ -735,7 +754,7 @@ void Cooling_Proc(void)
 			flg_duct_out = 1;											// 덕트 Open Close
 			flg_uvlamp_out = 1;
 
-			if((COMM_EXT_TEMP <= 50) && (COMM_HEATER_TEMP < 100))		// 배기싸온듸옙팬 50팬 팬팬
+			if((COMM_EXT_TEMP < 50) && (COMM_HEATER_TEMP < 50))		// 배기싸온듸옙팬 50팬 팬팬
 				cool_step = 99;
 			break;
 		case 99:
@@ -757,7 +776,7 @@ void Cooling_Proc(void)
 			}
 			break;
 		case 100:
-			if((COMM_EXT_TEMP > 50) || (COMM_HEATER_TEMP >= 100))										// 내부온도가 50도 초과
+			if((COMM_EXT_TEMP > 50) || (COMM_HEATER_TEMP >= 100))										// 내부온도가 50도 초과 // 토출온도 50도 
 				cool_step = 0;
 		default:
 			break;
@@ -1537,7 +1556,29 @@ void Output_Proc(void)
 		COMM_CIRFAN_ON = flg_cirfan_out;				// 순환 팬
 		COMM_VENTILFAN_ON = flg_ventilfan_out;			// 배기? 팬
 
-		COMM_HEATER_ON = flg_heater_out;				// 팬팬
+// 토출온도 110 히터를 OFF  flag heat off 
+// 90도 이하가 되면 Enable 
+// 토출온도 가 110도 이하는 감지 하면  
+		if(COMM_HEATER_TEMP < 100)
+		{
+			if(flg_heater_outEnable){
+				COMM_HEATER_ON = 0;				// Heater on/off
+			}
+			else{
+				COMM_HEATER_ON = flg_heater_out;				// Heater on/off
+			}
+
+			if( COMM_HEATER_TEMP < 90)
+				flg_heater_outEnable =0;
+
+		}else 
+		{
+
+			COMM_HEATER_ON = 0;				// Heater off 
+			flg_heater_outEnable = 1;
+
+		}
+		
 
 		COMM_DUCT = flg_duct_out;					// 덕트 Open Close
 		COMM_UVLAMP_ON = flg_uvlamp_out;
@@ -2426,6 +2467,7 @@ void HeaterTemper_Error_Check(void)
 // 히터 과열 센서불량 체크
 void OverHeat_Error_Check(void)
 {
+	
 	if((COMM_HEATER_TEMP >= 150) && (temper_open_error == 0))   // 
 	{
 		if(flg_heatertemp_check_first == 0)
@@ -2510,7 +2552,7 @@ void Error_Check_Proc(void)
 		Circula_Error_Check();		// 1. 순환 불량 체크 : Er 01
 		//AirPresure_Error_Check();	// 2. 풍압스위치 감지 불량 : Er 02
 		OverHeat_Error_Check();		// 3. 히터 과열 체크 : Er 03
-		// Heater_Error_Check();		// 4. 히터 불량 체크 : Er 04
+		Heater_Error_Check();		// 4. 히터 불량 체크 : Er 04
 		Smoke_Error_Check();			// 5. 연무기불량 : Er 05
 		
 		Ventilation_Error_Check();		// 7. 환기(배기)불량 체크 : Er 07
@@ -2623,7 +2665,7 @@ void Disp_Version(void)
 {
 	Seg_data_set(0, 13, 0);		// 'D'
 	Seg_data_set(2, 25, 0);		// 'r'
-	Seg_data_set(4, 4, 0);
-	Seg_data_set(6, 9, 0);
+	Seg_data_set(4, 5, 0);
+	Seg_data_set(6, 0, 0);
 }
 

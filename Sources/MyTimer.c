@@ -19,6 +19,7 @@ uint8_t callback_500ms = 0;
 uint8_t callback_1min = 0;
 uint8_t callback_30ms = 0;
 
+
 uint8_t  menu_key[KEY_COUNT] = {0,};
 uint8_t  keyin_buf[KEY_COUNT][3];
 uint8_t  key_pushed[KEY_COUNT] = {0,};
@@ -86,6 +87,7 @@ extern	uint8_t 	prev_dispmode;
 extern	uint8_t 	op_kind;
 extern	uint8_t  	coolled_timeout;
 extern	uint8_t  	playend_count;
+extern	uint8_t  	cooling_Timer;
 extern	_Bool		flg_dryend;
 
 extern	uint16_t  	humi_err_timeout;
@@ -248,6 +250,8 @@ void Timer_Proc(void)
 		//if(flg_check_humi_start)
 		if(humi_check_timeout)
 			humi_check_timeout--;
+		if(cooling_Timer)
+			cooling_Timer--;
 		
 		if(ster_run_timeout)
 			ster_run_timeout--;
