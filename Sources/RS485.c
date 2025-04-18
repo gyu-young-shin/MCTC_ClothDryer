@@ -194,7 +194,7 @@ void Rs485_proc(void)
 				}
 				else
 				{
-					COMM_EXT_TEMP = urx2_buf[1];
+					COMM_EXT_TEMP = urx2_buf[1] + 20;  // 온도에 + 20도를 추가한다.
 					COMM_EXT_HUMI = urx2_buf[2];
 					COMM_HEATER_TEMP = (int16_t)(urx2_buf[3] << 8);
 					COMM_HEATER_TEMP |= urx2_buf[4];

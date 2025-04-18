@@ -228,7 +228,7 @@ void Timer_Proc(void)
 		{
 			if(COMM_EXT_TEMP > 50)
 			{
-				flg_cirfan_out = 0;				// ¼øÈ¯ ÆÒ
+				flg_cirfan_out = 1;				// ¼øÈ¯ ÆÒ
 				flg_ventilfan_out = 1;			// ¹è±â ÆÒ
 				flg_heater_out = 0;				// È÷ÅÍ
 				flg_duct_out = 1;				// ´öÆ® Open Close

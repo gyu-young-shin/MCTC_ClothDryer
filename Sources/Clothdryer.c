@@ -12,8 +12,8 @@
 //post Æ÷Áö Àü¿ø OFF ¸ðµå¿¡¼­ ½Ç³» ¿Âµµ¸¸ º¼°ÍÀÌ ¾Æ´Ï¶ó È÷ÅÍ¿Âµµµµ º¸µµ·Ï ¼öÁ¤( 50µµ ¹Ì¸¸±îÁö FAN)  ¹è±âµµ ½ÃÅ°°í ¼øÈ¯µµ µÇ¾ß ÇÔ 
 
 _Bool		COMM_CIRFAN_ON = 0;				// ¼øÈ¯ ÆÒ
-_Bool		COMM_VENTILFAN_ON = 0;			// ¹è±â? ÆÒ
-_Bool		COMM_HEATER_ON = 0;				// ÆÒÆÒ
+_Bool		COMM_VENTILFAN_ON = 0;			// ¹è±â ÆÒ
+_Bool		COMM_HEATER_ON = 0;				// È÷ÅÍ
 _Bool		COMM_DUCT = 0;					// ´öÆ® Open Close
 _Bool		COMM_AC220_SPARE1 = 0;			// AC SPARE
 _Bool		COMM_UVLAMP_ON = 0;				// UV LAMP
@@ -21,8 +21,8 @@ _Bool		COMM_LEDLAMP_ON = 0;			// LED LAMP
 _Bool		COMM_SMOKE_HEATER_ON = 0;		// SMOKE HEATER
 _Bool		COMM_SMOKE_PUMP_ON = 0;			// SMOKE PUMP
 
-uint8_t 	COMM_SPEED_CIRCULA = 0;			// ¼øÈ¯ÆÒ ï¿½Óµï¿½
-uint8_t 	COMM_SPEED_VENTILATION = 0;		// ÆÒ¹è±â? ï¿½Óµï¿½
+uint8_t 	COMM_SPEED_CIRCULA = 0;			// ¼øÈ¯ÆÒ ¼Óµµ
+uint8_t 	COMM_SPEED_VENTILATION = 0;		// ÆÒ¹è±â ¼Óµµ
 
 _Bool		COMM_DOOR_SW = 0;
 _Bool		COMM_AIRPRESURE_SW = 0;			// Ç³ÆÒ ÆÒÆÒÄ¡
@@ -47,9 +47,9 @@ _Bool		flg_first_error = 0;			// Ã¹¹øÂ° ¿¡·¯
 
 
 _Bool		flg_cirfan_out = 0;				// ¼øÈ¯ ÆÒ
-_Bool		flg_ventilfan_out = 0;			// ¹è±â? ÆÒ
-_Bool		flg_heater_out = 0;				// ÆÒÆÒ
-_Bool		flg_heater_outEnable = 0;				// Heater Enable 
+_Bool		flg_ventilfan_out = 0;			// ¹è±â ÆÒ
+_Bool		flg_heater_out = 0;				// È÷ÅÍ
+_Bool		flg_heater_outEnable = 0;		// Heater Enable 
 _Bool		flg_duct_out = 0;				// ´öÆ® Open Close
 _Bool		flg_uvlamp_out = 0;
 _Bool		flg_smoke_heater_out = 0;
@@ -101,6 +101,10 @@ uint8_t		circula_fan_speed_backup = 0;
 uint8_t		temper_timeout = 0;
 uint8_t		airpresure_timeout = 0;
 
+uint8_t		coolTime_start_flag = 0;
+
+
+
 uint8_t		bldcdelay_timeout = 0;
 uint16_t	error_code = 0;
 uint16_t  	err_mask = 0x0001;
@@ -115,9 +119,9 @@ uint8_t 	buzzer_play_timeout = 0;
 uint8_t 	keycont_timeout = 0;
 uint8_t 	e2p_save_time = 0;
 uint8_t 	disp_timeout = 0;
-uint16_t	humi_check_timeout = 0;		// ÆÒÆÒÆÒ ÆÒÆÒÆÒ 10ÆÒ ï¿½Ì»ï¿½ ÆÒÆÒ ï¿½Ã°ï¿½
-uint8_t		compare_check_humi = 0;		// ¹è±â½Ï±ï¿½ ÆÒÆÒ ÆÒÆÒÆÒ ÆÒÆÒ
-uint8_t		humi_remain_time = 0;		// ÆÒÆÒÆÒ ÆÒÆÒ ï¿½Ã°ï¿½
+uint16_t	humi_check_timeout = 0;		// ¼³Á¤µÈ ½Àµµ¸¦ 10ºÐ ÀÌ»ó  °¨Áö½Ã°£
+uint8_t		compare_check_humi = 0;		// ºñ±³ÇÏ±âÀ§ÇØ ÃøÁ¤ÇÑ ½Àµµ 
+uint8_t		humi_remain_time = 0;		// ½Àµµ ³²Àº ½Ã°£ 
 
 uint8_t		oper_step = 0;
 uint8_t		smoke_step = 0;
@@ -136,10 +140,10 @@ uint16_t 	cir_err_timeout = 0;		// ¼øÈ¯ºÒ·® Timeout
 uint16_t 	heater_err_timeout = 0;		// È÷ÅÍºÒ·® Timeout
 uint16_t 	smokeheater_err_timeout = 0;// ¿¬¹«±âºÒ·® Timeout
 uint16_t 	liquidout_err_timeout = 0;	// ¿¬¹«¾× ¾øÀ½ Timeout
-uint16_t 	airpresure_err_timeout = 0;	// Ç³ï¿½Ð½ï¿½ÆÒÄ¡ ï¿½Ò·ï¿½ Timeout
-uint16_t 	airpresure_chk_timeout = 0;	// Ç³ï¿½Ð½ï¿½ÆÒÄ¡ Check Timeout
-uint16_t 	heater_running_time = 0;	// ÆÒÆÒ ÆÒ¹è±â½Ã°ï¿½
-uint16_t 	heater_run_total_time = 0;	// ÆÒÆÒ ï¿½âµ¿ÆÒÆÒ ÆÒÆÒÆÒ ¹è±â? ï¿½Ñ½Ã°ï¿½
+uint16_t 	airpresure_err_timeout = 0;	// Ç³¾Ð½ºÀ§Ä¡ ºÒ·® Timeout
+uint16_t 	airpresure_chk_timeout = 0;	// Ç³¾Ð½ºÀ§Ä¡ Check Timeout
+uint16_t 	heater_running_time = 0;	// È÷ÅÍ °¡µ¿½Ã°£ 
+uint16_t 	heater_run_total_time = 0;	// È÷ÅÍ °¡µ¿ºÎÅÍ °¡µ¿À² °è»ê ÃÑ ½Ã°£ 
 uint16_t 	heatertemp_check_timeout = 0;
 
 int16_t		prev_heater_temper = 0;
@@ -274,7 +278,7 @@ void Auto_Proc(void)
 	switch(oper_step)
 	{
 		case 0:
-			flg_cirfan_out = 0;				// ¼øÈ¯ ÆÒ
+			flg_cirfan_out = 1;				// ¼øÈ¯ ÆÒ
 			ventilation_fan_speed_level = 10;			// 2021-08-30 ï¿½Ú±ï¿½ÆÒ ÆÒÆÒ ÆÒÃ»ÆÒÆÒ ÆÒÆÒ 10ÆÒÆÒ ÆÒÆÒ
 			flg_ventilfan_out = 1;			// ¹è±â ÆÒ
 			flg_heater_out = 0;				// ÆÒÆÒ
@@ -282,9 +286,9 @@ void Auto_Proc(void)
 			flg_smoke_pump_out = 0;			// ÆÒÆÒ ÆÒÆÒ
 			flg_duct_out = 1;				// ´öÆ® Open Close
 			flg_uvlamp_out = 0;
-			oper_timeout = 20;				// 20ÆÒ ÆÒÆÒÆÒÆÒ ÆÒÆÒ
+			oper_timeout = 20;				// 20 minutes free purge
 			oper_step = 1;
-			oper_total_timeout = 7200;		// ÆÒ ÆÒÆÒ ÆÒÆÒ ï¿½Ã°ï¿½ 2ï¿½Ã°ï¿½
+			oper_total_timeout = 7200;		// Total operating time limit 2 hours
 			flg_goal_temp_ok = 0;
 			cycle_count = 0;
 			flg_heater_runrate_first = 0;
@@ -295,6 +299,8 @@ void Auto_Proc(void)
 		case 1:
 			if(oper_timeout == 0)
 			{
+				coolTime_start_flag = 1;   // cooling time start 
+
 				if(COMM_EXT_TEMP < 50)		// ³»ºÎ¿Âµµ°¡ 50µµ ¹Ì¸¸ÀÌ¸é 
 				{
 					circula_fan_speed_level = 10;
@@ -454,7 +460,7 @@ void Auto_Proc(void)
 			break;
 		case 99:
 			flg_cirfan_out = 0;										// ¼øÈ¯ ÆÒ
-			flg_ventilfan_out = 0;									// ¹è±â? ÆÒ
+			flg_ventilfan_out = 0;									// ¹è±â ÆÒ
 			flg_heater_out = 0;										// ÆÒÆÒ
 			flg_duct_out = 0;										// ´öÆ® Open Close
 			flg_uvlamp_out = 0;
@@ -476,7 +482,7 @@ void Ster_Proc(void)
 	switch(oper_step)
 	{
 		case 0:
-			flg_cirfan_out = 0;											// ¼øÈ¯ ÆÒ
+			flg_cirfan_out = 1;											// ¼øÈ¯ ÆÒ
 			ventilation_fan_speed_level = 10;
 			flg_ventilfan_out = 1;										// ¹è±â ÆÒ
 			flg_heater_out = 0;											// È÷ÅÍ
@@ -496,6 +502,7 @@ void Ster_Proc(void)
 		case 1:
 			if(oper_timeout == 0)
 			{
+				coolTime_start_flag = 1;
 				flg_coolled_amulating = 0;
 				flg_cwd = 0;
 				circula_fan_speed_level = 10;
@@ -524,6 +531,7 @@ void Ster_Proc(void)
 			if(flg_goal_temp_ok)
 			{
 				ventilation_fan_speed_level = 6;
+				flg_cirfan_out = 1;	
 				flg_ventilfan_out = 1;										// ¹è±â ÆÒ
 				flg_duct_out = 1;											// ´öÆ® Open Close
 				
@@ -628,19 +636,20 @@ void Smoke_Proc(void)
 			flg_smoke_heater_out = 1;					// smoke heater on
 			flg_smoke_pump_out = 0;
 			smoke_step = 1;
-			oper_timeout = 5;							// 5ÆÒ
+			oper_timeout = 5;							// 5ÃÊ
+			coolTime_start_flag = 0;
 			break;
 		case 1:
 			if(COMM_SMOKE_HEATEROUT_STATE)				// Smoke Heater BimetalÆÒ ¹è±â? ÆÒÆÒ
 			{
-				oper_timeout = 180;						// 3ÆÒ
+				oper_timeout = 240;						// 3ºÐ(180)  -- > 4ºÐ(240)
 				smoke_step = 2;
 			}
 			else
 			{
 				if(oper_timeout == 0)
 				{
-					oper_timeout = 2400;				// 40 ÆÒ					
+					oper_timeout = 2400;				// 40 ºÐ					
 					smoke_step = 10;
 				}
 			}
@@ -677,7 +686,7 @@ void Smoke_Proc(void)
 				
 				circula_fan_speed_level = 6;
 				flg_cirfan_out = 1;							// ¼øÈ¯ ÆÒ
-				oper_timeout = 120;							// 2ÆÒ
+				oper_timeout = 120;							// 2ºÐ
 				smoke_step = 4;
 			}
 			break;
@@ -691,7 +700,7 @@ void Smoke_Proc(void)
 		case 10:
 			if(COMM_SMOKE_HEATEROUT_STATE)				// Smoke Heater BimetalÆÒ ¹è±â? ÆÒÆÒ
 			{
-				oper_timeout = 180;						// 3ÆÒ
+				oper_timeout = 240;						// 3 mins -> 4 mins
 				smoke_step = 2;
 			}
 			else
@@ -723,43 +732,65 @@ void Cooling_Proc(void)
 	switch(cool_step)
 	{
 		case 0:
-			if((COMM_EXT_TEMP < 50) && (COMM_HEATER_TEMP < 50))										// ³»ºÎ¿Âµµ°¡ 50µµ ÀÌÇÏ
-				cool_step = 99;
+			if((COMM_EXT_TEMP < 50) && (COMM_HEATER_TEMP < 50)){ // ³»ºÎ¿Âµµ°¡ 50µµ ÀÌÇÏ
+				if(coolTime_start_flag ==1)
+				{
+					cooling_Timer = 180; // 3ºÐ µ¿ÀÛ 	
+				}									
+				cool_step = 1;
+			}
 			else
 			{
 				cool_step = 1;
 				disp_mode = DISP_TEMPTIME;
-				flg_cirfan_out = 1;	
-				flg_ventilfan_out = 1;
-				flg_heater_out = 0;
-				cooling_Timer = 180;
+				// flg_cirfan_out = 1;	
+				// flg_ventilfan_out = 1;
+				// flg_heater_out = 0;
+				cooling_Timer = 180; // 3ºÐ µ¿ÀÛ 
 			}
-			break;
-		case 1:
-			if(cooling_Timer ==0 ){
-				cool_step = 2;
-			}
-
 		break;
-		case 2:
-			flg_coolled_amulating = 1;
-			flg_cwd = 0;
+		case 1:
+			
+			
 			circula_fan_speed_level = 10;
-			flg_cirfan_out = 1;											// ¼øÈ¯ ÆÒ
+														// ¼øÈ¯ ÆÒ
 			ventilation_fan_speed_level = 10;
-			flg_ventilfan_out = 1;										// ¹è±â? ÆÒ
+													// ¹è±â ÆÒ
 			flg_heater_out = 0;											// È÷ÅÍ
 			flg_smoke_heater_out = 0;									// ¿¬¹« È÷ÅÍ
 			flg_smoke_pump_out = 0;										// ¿¬¹« ÆßÇÁ
-			flg_duct_out = 1;											// ´öÆ® Open Close
-			flg_uvlamp_out = 1;
+														// ´öÆ® Open Close
+			
+
+			if(temper_open_error){
+				flg_coolled_amulating = 0;
+				flg_cirfan_out = 0;
+				flg_ventilfan_out = 0;
+				flg_uvlamp_out = 0;
+				flg_duct_out = 0;
+			}else{
+
+				flg_cirfan_out = 1;
+				flg_ventilfan_out = 1;
+				flg_uvlamp_out = 1;
+				flg_duct_out = 1;
+				flg_coolled_amulating = 1;
+				flg_cwd = 0;
+			}
+
 
 			if((COMM_EXT_TEMP < 50) && (COMM_HEATER_TEMP < 50))		// ¹è±â½Î¿Âµï¿½ÆÒ 50ÆÒ ÆÒÆÒ
-				cool_step = 99;
+			{
+				if(cooling_Timer == 0){
+					coolTime_start_flag = 0;
+					cool_step = 99;
+				}
+					
+			}
 			break;
 		case 99:
 			flg_cirfan_out = 0;											// ¼øÈ¯ ÆÒ
-			flg_ventilfan_out = 0;										// ¹è±â? ÆÒ
+			flg_ventilfan_out = 0;										// ¹è±â ÆÒ
 			flg_heater_out = 0;											// È÷ÅÍ
 			flg_smoke_heater_out = 0;									// ¿¬¹« È÷ÅÍ
 			flg_smoke_pump_out = 0;										// ¿¬¹« ÆßÇÁ
@@ -776,7 +807,7 @@ void Cooling_Proc(void)
 			}
 			break;
 		case 100:
-			if((COMM_EXT_TEMP > 50) || (COMM_HEATER_TEMP >= 100))										// ³»ºÎ¿Âµµ°¡ 50µµ ÃÊ°ú // ÅäÃâ¿Âµµ 50µµ 
+			if((COMM_EXT_TEMP > 50) || (COMM_HEATER_TEMP >= 50))										// ³»ºÎ¿Âµµ°¡ 50µµ ÃÊ°ú // ÅäÃâ¿Âµµ 50µµ 
 				cool_step = 0;
 		default:
 			break;
@@ -807,10 +838,10 @@ void Stop_Proc(void)
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------
-// Å° ï¿½Ô·ï¿½ Ã³ÆÒ
+// key input process
 void InputKey_Proc(void)
 {
-	// Up, Down Key ¹è±â½Ã¿ï¿½ ÆÒÆÒÆÒ¹è±â? ÆÒÆÒ ï¿½Âµï¿½ÆÒ ÆÒ¹è±â½Ø´ï¿½.
+	// When the Up and Down keys are pressed simultaneously, the heater temperature is displayed.
 	if(key_continued[UP_KEY] && key_continued[DOWN_KEY]  && (flg_key_start == 0) && (error_code == 0))
 	{
 		if((disp_mode != DISP_HEATER_TEMP) && (disp_mode != DISP_HUMIDITY))
@@ -856,7 +887,7 @@ void InputKey_Proc(void)
 	}
 	
 	//--------------------------------------------------------------------------------------------------------------------
-	// ÆÒÆÒ ÆÒÆÒÆÒ ¹è±â? 
+	// If the door is open
 	if(temper_open_error)	
 	{
 		if((menu_key[UP_KEY]) || (menu_key[DOWN_KEY]) || (menu_key[AUTO_KEY]) || 
@@ -1046,7 +1077,7 @@ void InputKey_Proc(void)
 	}
 	
 	//-----------------------------------------------------------------------------------------------	
-	if(op_mode == STOP_MODE)			// ÆÒÆÒ¹è±â?
+	if(op_mode == STOP_MODE)			// Stop mode 
 	{
 		if(menu_key[RUNSTOP_KEY] && (error_code > 0)) 
 		{
@@ -1488,7 +1519,7 @@ KEY_CLEAR:
     menu_key[SMOKE_KEY] = 0;
 }
 //--------------------------------------------------------------------------------------------------------------------------------
-// ï¿½Ô·ï¿½ Check Ã³ÆÒ
+// Input Check Process
 void InputCheck_Proc(void)
 {
 	//----------------------------------------------------   TEMPER OPEN
@@ -1544,11 +1575,11 @@ void Output_Proc(void)
 	
 	if(temper_open_error == 0)
 	{
-		if(flg_circula_fan_backup)
-		{
-			flg_circula_fan_backup = 0;
-			circula_fan_speed_level = circula_fan_speed_backup;
-		}
+		// if(flg_circula_fan_backup)
+		// {
+		// 	circula_fan_speed_level = circula_fan_speed_backup;
+		// 	flg_circula_fan_backup = 0;
+		// }
 
 		COMM_SPEED_CIRCULA = circula_fan_speed_level;
 		COMM_SPEED_VENTILATION = ventilation_fan_speed_level;
@@ -1559,7 +1590,7 @@ void Output_Proc(void)
 // ÅäÃâ¿Âµµ 110 È÷ÅÍ¸¦ OFF  flag heat off 
 // 90µµ ÀÌÇÏ°¡ µÇ¸é Enable 
 // ÅäÃâ¿Âµµ °¡ 110µµ ÀÌÇÏ´Â °¨Áö ÇÏ¸é  
-		if(COMM_HEATER_TEMP < 100)
+		if(COMM_HEATER_TEMP < 110)
 		{
 			if(flg_heater_outEnable){
 				COMM_HEATER_ON = 0;				// Heater on/off
@@ -1595,15 +1626,15 @@ void Output_Proc(void)
 		{
 			if(flg_first_door_open)
 			{
-				flg_first_door_open = 0; 
 				circula_fan_off_timeout = 50;	// 5 ÃÊ
-				flg_circula_fan_backup  = 1;
-				circula_fan_speed_backup = circula_fan_speed_level;
-				circula_fan_speed_level = 3;
+				// flg_circula_fan_backup  = 1;
+				// circula_fan_speed_backup = circula_fan_speed_level;
+				// circula_fan_speed_level = 3;
 				COMM_CIRFAN_ON = 1;				// ¼øÈ¯ ÆÒ
+				flg_first_door_open = 0; 
 			}
 		}
-		
+		COMM_CIRFAN_ON = 0;
 		COMM_VENTILFAN_ON = 0;			//¹è±â ÆÒ
 		COMM_HEATER_ON = 0;				// È÷ÅÍ
 		COMM_DUCT = 0;					// ´öÆ® Open Close
@@ -2666,6 +2697,6 @@ void Disp_Version(void)
 	Seg_data_set(0, 13, 0);		// 'D'
 	Seg_data_set(2, 25, 0);		// 'r'
 	Seg_data_set(4, 5, 0);
-	Seg_data_set(6, 0, 0);
+	Seg_data_set(6, 1, 0);
 }
 
